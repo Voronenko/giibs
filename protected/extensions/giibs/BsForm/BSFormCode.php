@@ -88,7 +88,25 @@ EOD;
 
 	public function getModelAttributes()
 	{
-		$model=new $this->_modelClass($this->scenario);
-		return $model->getSafeAttributeNames();
+                $foundcustombsformset = false;
+ 
+		$model=new $this->_modelClass($this->scenario);                
+
+                $attributenames = $model->getSafeAttributeNames();
+                if ($this->scenario != "") {
+                  $rules = $model->rules(); 
+                  foreach($rules as $rule) {
+                     if ($rule[1] == 'safe' && $rule['on'] == $this->scenario){ 
+                       $attributenamesfiltered = explode(',',$rule[0]);
+                       $foundcustombsformset = true;
+                     }
+                  }
+                }
+
+                if (!$foundcustombsformset) {
+                  return $attributenames;
+                } else {
+                  return $attributenamesfiltered;
+                } 
 	}
 }
